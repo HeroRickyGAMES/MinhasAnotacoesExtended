@@ -148,7 +148,7 @@ class _listaCloseeDescloseState extends State<listaCloseeDesclose> {
                 ? const Center(child: Text('A lista está vazia!'))
                 : SizedBox(
                   width: double.infinity,
-                  height: 600,
+                  height: 1000,
               child: ListView(
                 children: snapshot.data!.map((documento) {
                   return Container(
@@ -166,10 +166,16 @@ class _listaCloseeDescloseState extends State<listaCloseeDesclose> {
                       children: [
                         Column(
                           children: [
-                            Text(documento['mensage'],
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold
+                            SizedBox(
+                              width: 300,
+                              height: 50,
+                              child: Center(
+                                child: Text(documento['mensage'],
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
                               ),
                             ),
                             Text(documento['horaPostada'],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:minhasanotacoesextended/mainList.dart';
@@ -13,8 +15,15 @@ class _prepareAcState extends State<prepareAc> {
   @override
   Widget build(BuildContext context) {
 
-    FirebaseAuth.initialize('AIzaSyBPeA_jhjE5Nj5VyW-kRQ9qYn6i4g2jlWs', VolatileStore());
-    Firestore.initialize("minhasanotacoesext-flutter");
+    if(Platform.isAndroid){
+      FirebaseAuth.initialize('AIzaSyDY60t0Yrh9e9s8HnJVVoV-k7gJChKTgNU', VolatileStore());
+      Firestore.initialize("minhasanotacoesext-flutter");
+    }else{
+      if(Platform.isWindows){
+        FirebaseAuth.initialize('AIzaSyBPeA_jhjE5Nj5VyW-kRQ9qYn6i4g2jlWs', VolatileStore());
+        Firestore.initialize("minhasanotacoesext-flutter");
+      }
+    }
 
     Navigator.push(context,
         MaterialPageRoute(builder: (context){

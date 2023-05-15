@@ -147,8 +147,8 @@ class _listaCloseeDescloseState extends State<listaCloseeDesclose> {
             return snapshot.data!.isEmpty
                 ? const Center(child: Text('A lista está vazia!'))
                 : SizedBox(
-              width: double.infinity,
-              height: 600,
+                  width: double.infinity,
+                  height: 600,
               child: ListView(
                 children: snapshot.data!.map((documento) {
                   return Container(

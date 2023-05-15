@@ -1,6 +1,8 @@
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:minhasanotacoesextended/criarAnota%C3%A7%C3%A3o.dart';
 import 'package:minhasanotacoesextended/editaranotacao.dart';
 import 'package:open_url/open_url.dart';
@@ -31,7 +33,7 @@ class _mainListState extends State<mainList> {
     print('snapshot: ${document['versao']}');
     final info = await PackageInfo.fromPlatform();
 
-    if(int.parse(info.version.replaceAll(".", '')) == int.parse((document['versao']).replaceAll(".", ''))){
+    if(int.parse(info.version.replaceAll(".", '')) < int.parse((document['versao']).replaceAll(".", ''))){
       showDialog(
         barrierDismissible: false,
         context: context,
@@ -50,14 +52,44 @@ class _mainListState extends State<mainList> {
                 child: const Text('Baixar'),
                 onPressed: () async {
 
-                  final result = await openUrl('https://github.com/renatoathaydes/open_url');
+                  final result = await openUrl('https://github.com/HeroRickyGAMES/MinhasAnotacoesExtended/releases');
                   if (result.exitCode == 0) {
-                    print('URL should be open in your browser');
+                    CherryToast.error(
+                        title:  Text(
+                          "Abrindo no navegador...",
+                          style: TextStyle(
+                              color: Colors.black
+                          ),
+                        ),
+                        displayTitle:  false,
+                        description:  Text(
+                          "Abrindo no navegador...",
+                          style: TextStyle(
+                              color: Colors.black
+                          ),
+                        ),
+                        animationDuration:  Duration(milliseconds:  1000),
+                        autoDismiss:  true
+                    ).show(context);
                   } else {
-                    print('Something went wrong (exit code = ${result.exitCode}): '
-                        '${result.stderr}');
+                    CherryToast.error(
+                        title:  Text(
+                          "Algo de errado aconteceu!",
+                          style: TextStyle(
+                              color: Colors.black
+                          ),
+                        ),
+                        displayTitle:  false,
+                        description:  Text(
+                          "Algo de errado aconteceu!",
+                          style: TextStyle(
+                              color: Colors.black
+                          ),
+                        ),
+                        animationDuration:  Duration(milliseconds:  1000),
+                        autoDismiss:  true
+                    ).show(context);
                   }
-
                 },
               ),
             ],

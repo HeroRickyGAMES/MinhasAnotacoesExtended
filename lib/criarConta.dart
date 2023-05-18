@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/auth/user_gateway.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/mainList.dart';
+import 'package:minhasanotacoesextended/mobileAds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class criarConta extends StatefulWidget {
   const criarConta({Key? key}) : super(key: key);
@@ -16,6 +21,8 @@ class _criarContaState extends State<criarConta> {
   String nome = '';
   String Email = '';
   String Senha = '';
+
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   irParaTelaMain(){
     Navigator.pop(context);
@@ -193,7 +200,13 @@ class _criarContaState extends State<criarConta> {
                         'uid': auth.userId,
                         'Nome' : nome,
                         'Email': Email,
-                      }).whenComplete((){
+                      }).whenComplete(() async {
+                        final SharedPreferences prefs = await _prefs;
+
+                        prefs.setString("Email", Email);
+                        prefs.setString("Senha", Senha);
+                        prefs.setBool("logado", true);
+
                         irParaTelaMain();
                         //go to mainScreen
                       });
@@ -208,6 +221,12 @@ class _criarContaState extends State<criarConta> {
             },
                 child: const Text('Criar uma conta.')
             ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            height: 200,
+            width: double.infinity,
+            child: Platform.isWindows == true ? WindowsAd(): mobileAds(),
           ),
         ],
       ),

@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
+import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/criarConta.dart';
 import 'package:minhasanotacoesextended/mainList.dart';
+import 'package:minhasanotacoesextended/mobileAds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -14,10 +19,10 @@ class loginScreen extends StatefulWidget {
 class _loginScreenState extends State<loginScreen> {
   String Email = '';
   String Senha = '';
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
-
     //FirebaseAuth.initialize('AIzaSyBPeA_jhjE5Nj5VyW-kRQ9qYn6i4g2jlWs', VolatileStore());
     //Firestore.initialize("minhasanotacoesext-flutter");
 
@@ -27,7 +32,6 @@ class _loginScreenState extends State<loginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
 
     irParaTelaMain(){
       Navigator.pop(context);
@@ -148,7 +152,13 @@ class _loginScreenState extends State<loginScreen> {
 
                 }else{
                   var auth = FirebaseAuth.instance;
-                  await auth.signIn(Email, Senha).whenComplete(() {
+                  await auth.signIn(Email, Senha).whenComplete(() async {
+                    final SharedPreferences prefs = await _prefs;
+
+                    prefs.setString("Email", Email);
+                    prefs.setString("Senha", Senha);
+                    prefs.setBool("logado", true);
+
 
                     irParaTelaMain();
 
@@ -248,7 +258,13 @@ class _loginScreenState extends State<loginScreen> {
                   ],
                 )
             ),
-          )
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            height: 200,
+            width: double.infinity,
+            child: Platform.isWindows == true ? WindowsAd(): mobileAds(),
+          ),
         ],
       ),
     );

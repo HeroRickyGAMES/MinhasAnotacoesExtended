@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/mainList.dart';
+import 'package:minhasanotacoesextended/mobileAds.dart';
 import 'package:minhasanotacoesextended/prepareMainList.dart';
 import 'package:uuid/uuid.dart';
 
@@ -48,6 +52,12 @@ class _CriarAnotacaoouEditarState extends State<CriarAnotacaoouEditar> {
                     ),
                   ),
                 ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                height: 200,
+                width: double.infinity,
+                child: Platform.isWindows == true ? WindowsAd(): mobileAds(),
               ),
               WillPopScope(
                 onWillPop: () async {

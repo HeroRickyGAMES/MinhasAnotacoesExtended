@@ -1,10 +1,14 @@
 
+import 'dart:io';
+
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/criarAnota%C3%A7%C3%A3o.dart';
 import 'package:minhasanotacoesextended/editaranotacao.dart';
+import 'package:minhasanotacoesextended/mobileAds.dart';
 import 'package:open_url/open_url.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -26,11 +30,11 @@ Future<List<Document>> getAnotacoes() async {
 }
 
 class _mainListState extends State<mainList> {
+
   verificarVersao() async {
     var ref = Firestore.instance.collection('Server').document('serverValues');
 
     var document = await ref.get();
-    print('snapshot: ${document['versao']}');
     final info = await PackageInfo.fromPlatform();
 
     if(int.parse(info.version.replaceAll(".", '')) < int.parse((document['versao']).replaceAll(".", ''))){
@@ -55,38 +59,38 @@ class _mainListState extends State<mainList> {
                   final result = await openUrl('https://github.com/HeroRickyGAMES/MinhasAnotacoesExtended/releases');
                   if (result.exitCode == 0) {
                     CherryToast.error(
-                        title:  Text(
+                        title:  const Text(
                           "Abrindo no navegador...",
                           style: TextStyle(
                               color: Colors.black
                           ),
                         ),
                         displayTitle:  false,
-                        description:  Text(
+                        description:  const Text(
                           "Abrindo no navegador...",
                           style: TextStyle(
                               color: Colors.black
                           ),
                         ),
-                        animationDuration:  Duration(milliseconds:  1000),
+                        animationDuration:  const Duration(milliseconds:  1000),
                         autoDismiss:  true
                     ).show(context);
                   } else {
                     CherryToast.error(
-                        title:  Text(
+                        title:  const Text(
                           "Algo de errado aconteceu!",
                           style: TextStyle(
                               color: Colors.black
                           ),
                         ),
                         displayTitle:  false,
-                        description:  Text(
+                        description:  const Text(
                           "Algo de errado aconteceu!",
                           style: TextStyle(
                               color: Colors.black
                           ),
                         ),
-                        animationDuration:  Duration(milliseconds:  1000),
+                        animationDuration:  const Duration(milliseconds:  1000),
                         autoDismiss:  true
                     ).show(context);
                   }
@@ -97,7 +101,6 @@ class _mainListState extends State<mainList> {
         },
       );
     }
-
   }
 
   @override
@@ -110,9 +113,19 @@ class _mainListState extends State<mainList> {
         title: const Text('Minhas Anotações'),
       ),
       body: SingleChildScrollView(
-        child: Container(
-            padding: const EdgeInsets.all(16),
-            child: const listaCloseeDesclose()
+        child: Column(
+          children: [
+            Container(
+                padding: const EdgeInsets.all(16),
+                child: const listaCloseeDesclose()
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              height: 200,
+              width: double.infinity,
+              child: Platform.isWindows == true ? WindowsAd(): mobileAds(),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -148,7 +161,7 @@ class _listaCloseeDescloseState extends State<listaCloseeDesclose> {
                 ? const Center(child: Text('A lista está vazia!'))
                 : SizedBox(
                   width: double.infinity,
-                  height: 1000,
+                  height: 800,
               child: ListView(
                 children: snapshot.data!.map((documento) {
                   return Container(

@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:minhasanotacoesextended/LoginScreen.dart';
+import 'package:minhasanotacoesextended/mainList.dart';
 import 'package:minhasanotacoesextended/prepareMainList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main(){
   runApp(
@@ -19,6 +21,12 @@ void main(){
 }
 
 appPrepare(context) async {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  final SharedPreferences prefs = await _prefs;
+
+  bool? logado = prefs.getBool('logado');
+
   await Future.delayed(Duration(seconds: 2));
 
   if(Platform.isAndroid){
@@ -31,18 +39,24 @@ appPrepare(context) async {
     }
   }
 
-  bool user = FirebaseAuth.instance.isSignedIn;
+  //bool user = FirebaseAuth.instance.isSignedIn;
   //var user = await FirebaseAuth.instance.getUser();
 
-  if(user == true){
-    //ir para a mainScreen
-    Navigator.pop(context);
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context){
-          return prepareAc();
-        }));
+  if(logado == true){
+    String? email = prefs.getString('Email');
+    String? Senha = prefs.getString('Senha');
 
-  }else if(user == false){
+    var auth = FirebaseAuth.instance;
+    await auth.signIn(email!, Senha!).whenComplete(() {
+
+      Navigator.pop(context);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context){
+            return mainList();
+          }));
+    });
+
+  }else{
     Navigator.pop(context);
     Navigator.push(context,
         MaterialPageRoute(builder: (context){

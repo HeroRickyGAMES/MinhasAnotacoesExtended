@@ -4,6 +4,10 @@
         android:label="Minhas Anotações (Extended)"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data
+            android:name="com.startapp.sdk.APPLICATION_ID"
+            android:value="204408205" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

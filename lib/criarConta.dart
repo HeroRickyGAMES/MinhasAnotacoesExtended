@@ -212,7 +212,29 @@ class _criarContaState extends State<criarConta> {
                       });
                     }catch(e){
 
-                      print(e);
+                      CherryToast.error(
+
+                          title: Text(
+                            "Ocorreu um erro: $e",
+                            style: const TextStyle(
+                                color: Colors.black
+                            ),
+                          ),
+
+                          displayTitle:  false,
+
+                          description: Text(
+                            "Ocorreu um erro: $e, desinstale e instale o app!",
+                            style: TextStyle(
+                                color: Colors.black
+                            ),
+                          ),
+
+                          animationDuration:  const Duration(milliseconds:  1000),
+
+                          autoDismiss:  true
+
+                      ).show(context);
 
                     }
                   }

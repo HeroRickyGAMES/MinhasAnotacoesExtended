@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:minhasanotacoesextended/LoginScreen.dart';
@@ -43,18 +44,47 @@ appPrepare(context) async {
   //var user = await FirebaseAuth.instance.getUser();
 
   if(logado == true){
-    String? email = prefs.getString('Email');
-    String? Senha = prefs.getString('Senha');
+    try{
+      String? email = prefs.getString('Email');
+      String? Senha = prefs.getString('Senha');
 
-    var auth = FirebaseAuth.instance;
-    await auth.signIn(email!, Senha!).whenComplete(() {
+      var auth = FirebaseAuth.instance;
+      await auth.signIn(email!, Senha!).whenComplete(() {
 
-      Navigator.pop(context);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context){
-            return mainList();
-          }));
-    });
+        Navigator.pop(context);
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context){
+              return mainList();
+            }));
+      });
+    }catch(e){
+
+      CherryToast.error(
+
+          title: Text(
+            "Ocorreu um erro: $e",
+            style: const TextStyle(
+                color: Colors.black
+            ),
+          ),
+
+          displayTitle:  false,
+
+          description: Text(
+            "Ocorreu um erro: $e, desinstale e instale o app!",
+            style: TextStyle(
+                color: Colors.black
+            ),
+          ),
+
+          animationDuration:  const Duration(milliseconds:  1000),
+
+          autoDismiss:  true
+
+      ).show(context);
+
+    }
+
 
   }else{
     Navigator.pop(context);

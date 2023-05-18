@@ -152,17 +152,47 @@ class _loginScreenState extends State<loginScreen> {
 
                 }else{
                   var auth = FirebaseAuth.instance;
-                  await auth.signIn(Email, Senha).whenComplete(() async {
-                    final SharedPreferences prefs = await _prefs;
 
-                    prefs.setString("Email", Email);
-                    prefs.setString("Senha", Senha);
-                    prefs.setBool("logado", true);
+                  try{
+                    await auth.signIn(Email, Senha).then((value) async {
+
+                      final SharedPreferences prefs = await _prefs;
+
+                      prefs.setString("Email", Email);
+                      prefs.setString("Senha", Senha);
+                      prefs.setBool("logado", true);
 
 
-                    irParaTelaMain();
+                      irParaTelaMain();
 
-                  });
+
+                    });
+                  }catch(e){
+                    CherryToast.error(
+
+                        title: Text(
+                          "Ocorreu um erro: $e",
+                          style: const TextStyle(
+                              color: Colors.black
+                          ),
+                        ),
+
+                        displayTitle:  false,
+
+                        description: Text(
+                          "Ocorreu um erro: $e",
+                          style: TextStyle(
+                              color: Colors.black
+                          ),
+                        ),
+
+                        animationDuration:  const Duration(milliseconds:  1000),
+
+                        autoDismiss:  true
+
+                    ).show(context);
+                  }
+
                 }
               }
             },
@@ -263,7 +293,7 @@ class _loginScreenState extends State<loginScreen> {
             padding: const EdgeInsets.all(16),
             height: 200,
             width: double.infinity,
-            child: Platform.isWindows == true ? WindowsAd(): mobileAds(),
+            child: Platform.isWindows == true ? const WindowsAd(): const mobileAds(),
           ),
         ],
       ),

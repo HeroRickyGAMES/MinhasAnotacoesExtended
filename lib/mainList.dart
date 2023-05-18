@@ -117,7 +117,7 @@ class _mainListState extends State<mainList> {
           children: [
             Container(
                 padding: const EdgeInsets.all(16),
-                child: const listaCloseeDesclose()
+                child: listaCloseeDesclose()
             ),
             Container(
               padding: const EdgeInsets.all(16),

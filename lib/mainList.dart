@@ -1,16 +1,20 @@
-
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:minhasanotacoesextended/MercadoP%C3%A1goAPI/MercadoPagoCheckoutAndroid.dart';
 import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/criarAnota%C3%A7%C3%A3o.dart';
 import 'package:minhasanotacoesextended/editaranotacao.dart';
 import 'package:minhasanotacoesextended/mobileAds.dart';
 import 'package:open_url/open_url.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
+
+//Programado por HeroRickyGames
 
 class mainList extends StatefulWidget {
   const mainList({Key? key}) : super(key: key);
@@ -31,7 +35,75 @@ Future<List<Document>> getAnotacoes() async {
 
 class _mainListState extends State<mainList> {
 
-  verificarVersao() async {
+  donate(int Valor, context) async {
+    var ServerReference = Firestore.instance.collection('Server').document('serverValues');
+
+    var document = await ServerReference.get();
+
+    String ChavePublica = "${document['ChavePublica']}";
+    String AccessToken = "${document['Access Token']}";
+
+    final url = 'https://api.mercadopago.com/checkout/preferences';
+
+    final body = jsonEncode({
+      "items": [
+        {
+          "title": "Pagamento do Donate",
+          "description": "Pagamento do Donate",
+          "quantity": 1,
+          "currency_id": "ARS",
+          "unit_price": Valor
+        }
+      ],
+      "back_urls": {
+        "success": "https://herorickygames.github.io/MinhasAnotacoesExtended/sucess",
+        "failure": "https://herorickygames.github.io/MinhasAnotacoesExtended/falha"
+      },
+      "payer": {
+        "email": "payer@email.com"
+      }
+    });
+
+    final response = await http.post(
+      Uri.parse('$url?access_token=$AccessToken'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+    if(response.statusCode == 200 || response.statusCode == 201){
+
+      final preferenceId = jsonDecode(response.body)['id'];
+      print('Preference created with ID: $preferenceId');
+
+      var uuid = Uuid().v4();
+
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context){
+            return ChekoutPayment(preferenceId, ChavePublica, uuid);
+          }));
+    }else{
+      CherryToast.error(
+          title:  const Text(
+            "Ocorreu um erro ao executar a API de pagamentos ou chamar a API do Mercado Pago, tente novamente!",
+            style: TextStyle(
+                color: Colors.black
+            ),
+          ),
+          displayTitle:  false,
+          description:  const Text(
+            "Pagamento realizado com sucesso!",
+            style: TextStyle(
+                color: Colors.black
+            ),
+          ),
+          animationDuration:  const Duration(milliseconds:  1000),
+          autoDismiss:  true
+      ).show(context);
+    }
+  }
+
+  verificarVersao(context) async {
     var ref = Firestore.instance.collection('Server').document('serverValues');
 
     var document = await ref.get();
@@ -105,7 +177,7 @@ class _mainListState extends State<mainList> {
 
   @override
   Widget build(BuildContext context) {
-    verificarVersao();
+    verificarVersao(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,
@@ -117,13 +189,13 @@ class _mainListState extends State<mainList> {
           children: [
             Container(
                 padding: const EdgeInsets.all(16),
-                child: listaCloseeDesclose()
+                child: const listaCloseeDesclose()
             ),
             Container(
               padding: const EdgeInsets.all(16),
               height: 200,
               width: double.infinity,
-              child: Platform.isWindows == true ? WindowsAd(): mobileAds(),
+              child: Platform.isWindows == true ? const WindowsAd(): const mobileAds(),
             ),
           ],
         ),
@@ -137,6 +209,114 @@ class _mainListState extends State<mainList> {
         },
         child: const Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: BottomAppBar(
+          child: IconButton(
+            icon: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(right: 10),
+                    child: const Icon(Icons.monetization_on)
+                ),
+                const Text('Doe para o Desenvolvimento do app!')
+              ],
+            ), onPressed: () {
+              int valor = 0;
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(
+                      'Faça um donate para o desenvolvedor do app',
+                      style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    content: Container(
+                      width: 350,
+                      height: 350,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Faça uma doação para o desenvolvedor!\nQualquer valor é valido!',
+                            style: TextStyle(
+                                fontSize: 19
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(16),
+                            child:
+                            TextFormField(
+                              onChanged: (vaalor){
+                                valor = int.parse(vaalor);
+                                //Mudou mandou para a String
+                              },
+                              keyboardType: TextInputType.number,
+                              obscureText: false,
+                              //enableSuggestions: false,
+                              //autocorrect: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Valor',
+                                hintStyle: TextStyle(
+                                    fontSize: 20
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(onPressed: (){
+
+                        if(valor <= 0){
+                          CherryToast.error(
+                              title: Text(
+                                "O valor não pode ser menor que R\$0.00!",
+                                style: const TextStyle(
+                                    color: Colors.black
+                                ),
+                              ),
+                              displayTitle:  false,
+                              description: Text(
+                                "O valor não pode ser menor que R\$0.00!",
+                                style: TextStyle(
+                                    color: Colors.black
+                                ),
+                              ),
+                              animationDuration:  const Duration(milliseconds:  1000),
+                              autoDismiss:  true
+                          ).show(context);
+                        }else{
+                          if(valor >= 1){
+
+                            String certa = "${valor}".replaceAll(",", ".");
+
+                            donate(int.parse(certa), context);
+                            Navigator.pop(context);
+                          }
+                        }
+                      }, child: Text(
+                        'Ok',
+                        style: TextStyle(
+                            fontSize: 19
+                        ),
+                      )
+                      )
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:minhasanotacoesextended/LoginScreen.dart';
 import 'package:minhasanotacoesextended/mainList.dart';
@@ -30,16 +31,21 @@ appPrepare(context) async {
 
   await Future.delayed(Duration(seconds: 2));
 
-  if(Platform.isAndroid){
+
+  if(kIsWeb){
     FirebaseAuth.initialize('AIzaSyDY60t0Yrh9e9s8HnJVVoV-k7gJChKTgNU', VolatileStore());
     Firestore.initialize("minhasanotacoesext-flutter");
   }else{
-    if(Platform.isWindows){
-      FirebaseAuth.initialize('AIzaSyBPeA_jhjE5Nj5VyW-kRQ9qYn6i4g2jlWs', VolatileStore());
+    if(Platform.isAndroid){
+      FirebaseAuth.initialize('AIzaSyDY60t0Yrh9e9s8HnJVVoV-k7gJChKTgNU', VolatileStore());
       Firestore.initialize("minhasanotacoesext-flutter");
+    }else{
+      if(Platform.isWindows){
+        FirebaseAuth.initialize('AIzaSyBPeA_jhjE5Nj5VyW-kRQ9qYn6i4g2jlWs', VolatileStore());
+        Firestore.initialize("minhasanotacoesext-flutter");
+      }
     }
   }
-
   //bool user = FirebaseAuth.instance.isSignedIn;
   //var user = await FirebaseAuth.instance.getUser();
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minhasanotacoesextended/MercadoP%C3%A1goAPI/MercadoPagoCheckoutAndroid.dart';
@@ -29,7 +30,6 @@ Future<List<Document>> getAnotacoes() async {
   var auth = FirebaseAuth.instance;
 
   List<Document> mensages = await UserReference.where('idPertence', isEqualTo: auth.userId).get();
-
   return mensages;
 }
 
@@ -74,14 +74,72 @@ class _mainListState extends State<mainList> {
     if(response.statusCode == 200 || response.statusCode == 201){
 
       final preferenceId = jsonDecode(response.body)['id'];
-      print('Preference created with ID: $preferenceId');
 
-      var uuid = Uuid().v4();
+      var uuid = const Uuid().v4();
 
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context){
-            return ChekoutPayment(preferenceId, ChavePublica, uuid);
-          }));
+      if(kIsWeb){
+
+      }else{
+        if(Platform.isWindows){
+          final init_point = jsonDecode(response.body)['init_point'];
+          String url = '${init_point}';
+          final result = await openUrl(url);
+
+          if (result.exitCode == 0){
+            CherryToast.error(
+                title:  const Text(
+                  "Abrindo no navegador...",
+                  style: TextStyle(
+                      color: Colors.black
+                  ),
+                ),
+                displayTitle:  false,
+                description:  const Text(
+                  "Abrindo no navegador...",
+                  style: TextStyle(
+                      color: Colors.black
+                  ),
+                ),
+                animationDuration:  const Duration(milliseconds:  1000),
+                autoDismiss:  true
+            ).show(context);
+          }else {
+            CherryToast.error(
+                title:  const Text(
+                  "Algo de errado aconteceu!",
+                  style: TextStyle(
+                      color: Colors.black
+                  ),
+                ),
+                displayTitle:  false,
+                description:  const Text(
+                  "Algo de errado aconteceu!",
+                  style: TextStyle(
+                      color: Colors.black
+                  ),
+                ),
+                animationDuration:  const Duration(milliseconds:  1000),
+                autoDismiss:  true
+            ).show(context);
+          }
+
+
+          CollectionReference DonateCollection = Firestore.instance.collection('Donate');
+
+          DonateCollection.document(preferenceId).set({
+            'UIDCompra': uuid,
+            'idCompra': preferenceId,
+            'Status': '(Desconhecido)',
+            'Origin': 'Desktop (Windows)',
+          });
+        }
+        if(Platform.isAndroid){
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context){
+                return ChekoutPayment(preferenceId, ChavePublica, uuid);
+              }));
+        }
+      }
     }else{
       CherryToast.error(
           title:  const Text(
@@ -127,7 +185,6 @@ class _mainListState extends State<mainList> {
               TextButton(
                 child: const Text('Baixar'),
                 onPressed: () async {
-
                   final result = await openUrl('https://github.com/HeroRickyGAMES/MinhasAnotacoesExtended/releases');
                   if (result.exitCode == 0) {
                     CherryToast.error(
@@ -195,7 +252,7 @@ class _mainListState extends State<mainList> {
               padding: const EdgeInsets.all(16),
               height: 200,
               width: double.infinity,
-              child: Platform.isWindows == true ? const WindowsAd(): const mobileAds(),
+              child: kIsWeb == true? Container() : Platform.isWindows == true ? const WindowsAd(): const mobileAds(),
             ),
           ],
         ),
@@ -229,7 +286,7 @@ class _mainListState extends State<mainList> {
                 barrierDismissible: false,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text(
+                    title: const Text(
                       'Faça um donate para o desenvolvedor do app',
                       style: TextStyle(
                           fontSize: 19,
@@ -243,14 +300,14 @@ class _mainListState extends State<mainList> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Faça uma doação para o desenvolvedor!\nQualquer valor é valido!',
                             style: TextStyle(
                                 fontSize: 19
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             child:
                             TextFormField(
                               onChanged: (vaalor){
@@ -261,7 +318,7 @@ class _mainListState extends State<mainList> {
                               obscureText: false,
                               //enableSuggestions: false,
                               //autocorrect: false,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 hintText: 'Valor',
                                 hintStyle: TextStyle(
@@ -278,14 +335,14 @@ class _mainListState extends State<mainList> {
 
                         if(valor <= 0){
                           CherryToast.error(
-                              title: Text(
+                              title: const Text(
                                 "O valor não pode ser menor que R\$0.00!",
-                                style: const TextStyle(
+                                style: TextStyle(
                                     color: Colors.black
                                 ),
                               ),
                               displayTitle:  false,
-                              description: Text(
+                              description: const Text(
                                 "O valor não pode ser menor que R\$0.00!",
                                 style: TextStyle(
                                     color: Colors.black
@@ -303,7 +360,7 @@ class _mainListState extends State<mainList> {
                             Navigator.pop(context);
                           }
                         }
-                      }, child: Text(
+                      }, child: const Text(
                         'Ok',
                         style: TextStyle(
                             fontSize: 19
@@ -337,102 +394,105 @@ class _listaCloseeDescloseState extends State<listaCloseeDesclose> {
           future: getAnotacoes(),
           builder: (BuildContext context,
               AsyncSnapshot<List<Document>> snapshot) {
-            return snapshot.data!.isEmpty
-                ? const Center(child: Text('A lista está vazia!'))
-                : SizedBox(
-                  width: double.infinity,
-                  height: 800,
-              child: ListView(
-                children: snapshot.data!.map((documento) {
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1.0,
+            if(snapshot.hasData){
+              return snapshot.data!.isEmpty
+                  ? const Center(child: Text('A lista está vazia!'))
+                  : SizedBox(
+                width: double.infinity,
+                height: 800,
+                child: ListView(
+                  children: snapshot.data!.map((documento) {
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 1.0,
+                        ),
+                        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                       ),
-                      borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            SizedBox(
-                              width: 300,
-                              height: 50,
-                              child: Center(
-                                child: Text(documento['mensage'],
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(
+                                width: 300,
+                                height: 50,
+                                child: Center(
+                                  child: Text(documento['mensage'],
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold
+                                    ),
                                   ),
                                 ),
                               ),
+                              Text(documento['horaPostada'],
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                  )),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            child: ElevatedButton(onPressed: (){
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context){
+                                    return editarAnotacao(documento['id'], documento['mensage']);
+                                  }));
+                            }, child: const Icon(Icons.edit)
                             ),
-                            Text(documento['horaPostada'],
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                )),
-                          ],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          child: ElevatedButton(onPressed: (){
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context){
-                                  return editarAnotacao(documento['id'], documento['mensage']);
-                                }));
-                          }, child: const Icon(Icons.edit)
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(5),
-                          child: ElevatedButton(onPressed: (){
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Deseja excluir essa anotação?'),
-                                  content: const SingleChildScrollView(
-                                    child: ListBody(
-                                      children: <Widget>[
-                                        Text('Após essa ação os dados escritos dentro dessa anotação deixarão de existir e não terá voltas!'),
-                                      ],
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            child: ElevatedButton(onPressed: (){
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Deseja excluir essa anotação?'),
+                                    content: const SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text('Após essa ação os dados escritos dentro dessa anotação deixarão de existir e não terá voltas!'),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('Cancelar'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text('Deletar anotação'),
-                                      onPressed: () {
-                                        UserReference.document(documento.id).delete().then((value){
-                                          setState(() {
-                                            const listaCloseeDesclose();
-                                          });
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('Cancelar'),
+                                        onPressed: () {
                                           Navigator.of(context).pop();
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }, child: const Icon(Icons.delete)
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                }).toList().reversed.toList(),
-              ),
-            );
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: const Text('Deletar anotação'),
+                                        onPressed: () {
+                                          UserReference.document(documento.id).delete().then((value){
+                                            setState(() {
+                                              const listaCloseeDesclose();
+                                            });
+                                            Navigator.of(context).pop();
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }, child: const Icon(Icons.delete)
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }).toList().reversed.toList(),
+                ),
+              );
+            }
+            return const CircularProgressIndicator();
           },
         ),
       ],

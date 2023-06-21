@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/criarConta.dart';
@@ -293,7 +294,7 @@ class _loginScreenState extends State<loginScreen> {
             padding: const EdgeInsets.all(16),
             height: 200,
             width: double.infinity,
-            child: Platform.isWindows == true ? const WindowsAd(): const mobileAds(),
+            child: kIsWeb == true? Container() : Platform.isWindows == true ? const WindowsAd(): const mobileAds(),
           ),
         ],
       ),

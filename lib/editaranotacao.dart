@@ -39,6 +39,8 @@ class _editarAnotacaoState extends State<editarAnotacao> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 child: TextField(
+                  enableSuggestions: true,
+                  autocorrect: true,
                   controller: anotacaoControl,
                   minLines: 37,
                   maxLines: null,
@@ -82,7 +84,7 @@ class _editarAnotacaoState extends State<editarAnotacao> {
           if(mensage == ''){
             CherryToast.error(
 
-                title:  Text(
+                title:  const Text(
                   "Preencha a anotação!",
                   style: TextStyle(
                       color: Colors.black
@@ -91,14 +93,14 @@ class _editarAnotacaoState extends State<editarAnotacao> {
 
                 displayTitle:  false,
 
-                description:  Text(
+                description:  const Text(
                   "Preencha a anotação!",
                   style: TextStyle(
                       color: Colors.black
                   ),
                 ),
 
-                animationDuration:  Duration(milliseconds:  1000),
+                animationDuration:  const Duration(milliseconds:  1000),
 
                 autoDismiss:  true
 

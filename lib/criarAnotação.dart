@@ -4,13 +4,13 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:minhasanotacoesextended/WindowsAds.dart';
 import 'package:minhasanotacoesextended/mainList.dart';
 import 'package:minhasanotacoesextended/mobileAds.dart';
-import 'package:minhasanotacoesextended/prepareMainList.dart';
 import 'package:uuid/uuid.dart';
+
+//Desenvolvido por HeroRickyGames
 
 class CriarAnotacaoouEditar extends StatefulWidget {
   const CriarAnotacaoouEditar({Key? key}) : super(key: key);
@@ -39,6 +39,9 @@ class _CriarAnotacaoouEditarState extends State<CriarAnotacaoouEditar> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   child: TextField(
+                    keyboardType: TextInputType.multiline,
+                    enableSuggestions: true,
+                    autocorrect: true,
                     minLines: 37,
                     maxLines: null,
                     onChanged: (value){
@@ -81,7 +84,7 @@ class _CriarAnotacaoouEditarState extends State<CriarAnotacaoouEditar> {
           if(mensage == ''){
             CherryToast.error(
 
-                title:  Text(
+                title:  const Text(
                     "Preencha a anotação!",
                   style: TextStyle(
                       color: Colors.black
@@ -90,14 +93,14 @@ class _CriarAnotacaoouEditarState extends State<CriarAnotacaoouEditar> {
 
                 displayTitle:  false,
 
-                description:  Text(
+                description:  const Text(
                     "Preencha a anotação!",
                   style: TextStyle(
                       color: Colors.black
                   ),
                 ),
 
-                animationDuration:  Duration(milliseconds:  1000),
+                animationDuration:  const Duration(milliseconds:  1000),
 
                 autoDismiss:  true
 

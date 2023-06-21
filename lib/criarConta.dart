@@ -29,7 +29,7 @@ class _criarContaState extends State<criarConta> {
     Navigator.pop(context);
     Navigator.push(context,
         MaterialPageRoute(builder: (context){
-          return mainList();
+          return const mainList();
         }));
   }
 
@@ -39,7 +39,7 @@ class _criarContaState extends State<criarConta> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,
-        title: Text('Criar uma nova conta'),
+        title: const Text('Criar uma nova conta'),
         centerTitle: true,
       ),
       body: Column(
@@ -116,7 +116,7 @@ class _criarContaState extends State<criarConta> {
               if(nome == ''){
                 CherryToast.error(
 
-                    title:  Text(
+                    title:  const Text(
                         "Preencha o seu nome!",
                       style: TextStyle(
                         color: Colors.black
@@ -125,14 +125,14 @@ class _criarContaState extends State<criarConta> {
 
                     displayTitle:  false,
 
-                    description:  Text(
+                    description:  const Text(
                         "Preencha o seu nome!",
                       style: TextStyle(
                           color: Colors.black
                       ),
                     ),
 
-                    animationDuration:  Duration(milliseconds:  1000),
+                    animationDuration:  const Duration(milliseconds:  1000),
 
                     autoDismiss:  true
 
@@ -141,7 +141,7 @@ class _criarContaState extends State<criarConta> {
                 if(Email == ''){
                   CherryToast.error(
 
-                      title:  Text(
+                      title:  const Text(
                           "Preencha seu email!",
                         style: TextStyle(
                             color: Colors.black
@@ -150,14 +150,14 @@ class _criarContaState extends State<criarConta> {
 
                       displayTitle:  false,
 
-                      description:  Text(
+                      description:  const Text(
                           "Preencha seu email!",
                         style: TextStyle(
                             color: Colors.black
                         ),
                       ),
 
-                      animationDuration:  Duration(milliseconds:  1000),
+                      animationDuration:  const Duration(milliseconds:  1000),
 
                       autoDismiss:  true
 
@@ -166,7 +166,7 @@ class _criarContaState extends State<criarConta> {
                   if(Senha == ''){
                     CherryToast.error(
 
-                        title:  Text(
+                        title:  const Text(
                             "Preencha sua senha!",
                           style: TextStyle(
                               color: Colors.black
@@ -175,14 +175,14 @@ class _criarContaState extends State<criarConta> {
 
                         displayTitle:  false,
 
-                        description:  Text(
+                        description:  const Text(
                             "Preencha sua senha!",
                           style: TextStyle(
                               color: Colors.black
                           ),
                         ),
 
-                        animationDuration:  Duration(milliseconds:  1000),
+                        animationDuration:  const Duration(milliseconds:  1000),
 
                         autoDismiss:  true
 
@@ -226,7 +226,7 @@ class _criarContaState extends State<criarConta> {
 
                           description: Text(
                             "Ocorreu um erro: $e, desinstale e instale o app!",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.black
                             ),
                           ),
